@@ -17,14 +17,27 @@
 ai-native-audit/
 ├── README.md
 ├── 00-product-brief.md      # 통합 브리프 (예정)
-└── design/
-    ├── 01-rubric.md         # 역량 dimension·레벨 (예정)
-    ├── 02-scoring.md        # 점수·moat threshold·처방 (예정)
-    ├── 03-instrumentation.md# plug-in 수집·측정 (예정)
-    └── 04-positioning.md    # 경쟁·wedge·네이밍 (예정)
+├── ainative/               # Week 1 MVP (Python, stdlib only, 로컬 전용)
+│   ├── parse_transcript.py  # 세션 JSONL → 위임·오케스트레이션·반복 신호
+│   ├── parse_git.py         # repo → 폐기율·정정·커밋규율
+│   ├── scan_config.py       # ~/.claude·.claude 인벤토리 → 빌드자산(D4·D7)
+│   ├── metrics.py           # 신호 → 7축 점수 (glass box, 임계치 공개)
+│   ├── report.py            # → 자기완결 HTML(인라인 SVG)
+│   └── cli.py               # ainative scan / report
+└── design/                  # 01 rubric · 02 scoring · 03 instrumentation
+                             # 04 positioning · 05 도출·타당도 · 06 시각화
 ```
 
 > Patient-zero = 본인(프리랜서 AI 컨설턴트, Claude Code 1인 운영). 첫 dogfooding 대상.
+
+## 써보기 (30초, 로컬·네트워크 0)
+```bash
+# Claude Code를 써온 머신에서 (Python 3.9+)
+python -m ainative scan      # ~/.claude/projects 분석 → ainative_result.json
+python -m ainative report    # report.html 생성 후 브라우저로 열기
+#   옵션: --repo <git경로>  --transcripts <경로>  --no-open
+```
+원문 transcript·코드는 기기를 떠나지 않음. 리포트엔 점수·신호 숫자만.
 
 ---
 
@@ -52,7 +65,14 @@ ai-native-audit/
 2. 모든 축 **L4 = "build 증거" 필수** (정적 스캔 hook/skill/MCP/룰 인벤토리). `scan_config.py` 1급.
 3. **glass-box 강제** — 모든 점수가 인용 근거(실제 transcript/git 인스턴스)로 분해. 신뢰=제품.
 
-**▶ 다음 단계 (Week 1 MVP, 아직 코드 0):**
-- ① `~/.claude/projects/**/*.jsonl` 실제 스키마 1개 열어 확인 → ② `parse_transcript.py` → ③ `parse_git.py`(--numstat·revert) → ④ `scan_config.py` → ⑤ `metrics.py`(결정적 D1·D4·D6·D7, 곱셈게이트) → ⑥ `report.py`(순수 SVG) → ⑦ 본인 데이터로 첫 실제 자기진단.
-- 스택: Python 3 **표준 라이브러리만**, 로컬 전용, 네트워크 0.
-- Week2 = LLM-judge(D2·D3·D5)+처방 / Week3 = hook 실시간+plugin / Week4 = 반증·시계열.
+**✅ Week 1 MVP 완료 (2026-06-02)** — 본인 62개 세션으로 검증:
+- 파이프라인 end-to-end 작동: `scan`(transcript+git+config → 7축) → `report`(SVG HTML).
+- 결정적 축 채점: D1 위임·D4 오케스트레이션·D6 반복(저신뢰)·D7 복리.
+- ★ 정직성 게이트: 신뢰축(D2) 미측정이면 **MOAT 단정 안 함 → "잠정(PROVISIONAL)"**. (우리 이론의 '함정형 false-positive' 자가 차단.)
+- glass-box: 모든 점수가 근거로 분해(`<details>` 클릭), 임계치는 `metrics.py`에 공개.
+
+**▶ 다음 (Week 2):**
+- LLM-judge로 D2 검증·D3 컨텍스트·D5 한계운전 채점 → 스펙트럼·해자 판정 확정.
+- 처방 엔진(본인 로그 인스턴스 3개 인용 + 7일 측정).
+- 그 후 Week3 hook 실시간+plugin / Week4 반증·시계열 / ③ 공유 카드.
+- 결정 대기: 채점 hero visual은 design/06에서 **스펙트럼+처방 우선으로 확정** (잔여는 세부 폴리시).

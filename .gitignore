@@ -1,9 +1,11 @@
-# 로컬 수집 데이터 (절대 커밋 금지 — 원문·민감)
+# 로컬 수집 데이터·개인 결과 (절대 커밋 금지 — 원문·점수 민감)
 .ainative/
 *.sqlite
 *.db
 events.jsonl
 reports/*.html
+ainative_result.json
+report.html
 
 # Python
 __pycache__/
